@@ -3,7 +3,6 @@
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
-#from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 import re
 import pandas as pd
@@ -37,7 +36,6 @@ def scrape(item, requests):
     chrome_options.add_experimental_option('useAutomationExtension', False)
 
     driver = webdriver.Chrome("/usr/bin/chromedriver", options=chrome_options, desired_capabilities=chrome_options.to_capabilities())
-    #driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options, desired_capabilities=chrome_options.to_capabilities())
     driver.implicitly_wait(20)
     driver.get(url)
 
@@ -90,51 +88,6 @@ def scrape(item, requests):
         link.append(div.get('item-url'))
 
 
-    #meridiem = []
-    #for div in meridies:
-    #    meridiem.append(div.getText())
-
-    #carrier = []
-    #for div in soup.find_all('div', attrs={'class': 'leg-carrier'}):
-    #    carriers = div.find('img', alt=True)
-    #    carrier.append(carriers['alt'])
-
-    #deptime = np.asarray(deptime)
-    #if (soloida != 1):
-    #    deptime = deptime.reshape(int(len(deptime)/2), 2) #para ida y vuelta
-    #else:
-    #    deptime = deptime.reshape(int(len(deptime)/1), 1)  #solo vuelta
-
-    #arrtime = np.asarray(arrtime)
-    #if (soloida != 1):
-    #    arrtime = arrtime.reshape(int(len(arrtime)/2), 2)
-    #else:
-    #    arrtime = arrtime.reshape(int(len(arrtime)/1), 1)
-
-    #meridiem = np.asarray(meridiem)
-    #if (soloida != 1):
-    #    meridiem = meridiem.reshape(int(len(meridiem)/4), 4)
-    #else:
-    #    meridiem = meridiem.reshape(int(len(meridiem)/2), 2)
-
-    #carrier = np.asarray(carrier)
-    #print (carrier)
-    #carrier = carrier.reshape(int(len(carrier)/1), 1)
-
-    #Get the price
-    #regex = re.compile('Common-Booking-MultiBookProvider (.*)multi-row Theme-featured-large(.*)')
-    #price_list = soup.find_all('div', attrs={'class': regex})
-
-    #price = []
-    #for div in price_list:
-    #    print(div.getText().split('\n')[3][1:])
-    #    if (div.getText().split('\n')[3][1:] != 'nfo'):
-    #        price.append(int(div.getText().split('\n')[3][1:])) #cambio [3] por [4]
-    #    #else:
-    #    #    price.append()    #agrego appends con nada, para evitar error
-    #    print(price)
-
-
     df = pd.DataFrame({"time" : datetime.now().strftime("%Y-%m-%d"), "title" : title, "price" : price, "link" : link })
 
 
@@ -155,13 +108,10 @@ results = pd.DataFrame(columns=['time','title','price','link'])
 
 
 requests = 0
-#resultsCsv = []
 
-#destinations = ['MAD','AMS']
-#looking = ['almohada-inteligente','Zapatillas-Reef-Mission-Le','balanza-xiaomi','notebook-fhd_PriceRange_0-90000']
-looking = ['galaxy-a71']
-#startdates = ['2020-09-30','2020-10-02','2020-10-03','2020-10-24']
-#startdates = ['2021-01-11','2021-01-20']
+looking = ['almohada-inteligente','Zapatillas-Reef-Mission-Le','balanza-xiaomi']
+#looking = ['galaxy-a71']
+
 
 for look in looking:
     #resultsCsv = []
