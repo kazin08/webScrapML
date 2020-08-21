@@ -17,16 +17,12 @@ import os
 def scrape(item, requests):
 
     global results
-    global resultsCsv  #para guardar bien los csv
-
-    #enddate = datetime.strptime(startdate, '%Y-%m-%d').date() + timedelta(days)
-    #enddate = enddate.strftime('%Y-%m-%d')
-
+    global resultsCsv  #to save CSV
 
     url = "https://listado.mercadolibre.com.ar/" + item  #busqueda
 
 
-    #https://listado.mercadolibre.com.ar/almohada
+    #https://listado.mercadolibre.com.ar/almohada   #example
     print("\n" + url)
 
     chrome_options = webdriver.ChromeOptions()
@@ -43,7 +39,7 @@ def scrape(item, requests):
     time.sleep(5)
     soup=BeautifulSoup(driver.page_source, 'lxml')
 
-    #agrego si sale error_networkchange
+    #if i get error_networkchange for some reason
     #print(soup.find_all('div', attrs={'class': 'error-code'}))
     if (soup.find_all('div', attrs={'class': 'error-code'})) != []:
         print("ERROR NETWORK CHANGED")
@@ -51,13 +47,7 @@ def scrape(item, requests):
         time.sleep(3)
         return "failure"
 
-    if soup.find_all('p')[0].getText() == "Please confirm that you are a real KAYAK user.":
-        print("Kayak thinks I'm a bot, which I am ... so let's wait a bit and try again")
-        driver.close()
-        time.sleep(random.randint(20,55))   #agregue un tiempo aleatorio para la demora
-        return "failure"
-
-    time.sleep(20) #wait 20sec for the page to load, tratar de usar el info para que tarde mas
+    time.sleep(20) #wait 20sec for the page to load
 
     soup=BeautifulSoup(driver.page_source, 'lxml')
 
@@ -91,13 +81,12 @@ def scrape(item, requests):
     df = pd.DataFrame({"time" : datetime.now().strftime("%Y-%m-%d"), "title" : title, "price" : price, "link" : link })
 
 
-
     results = pd.concat([results, df], sort=False)
     resultsCsv = pd.concat([df], sort=False)
 
     driver.close() #close the browser
 
-    time.sleep(15) #wait 15sec until the next request
+    time.sleep(10) #wait 15sec until the next request
 
     return "success"
 
@@ -121,16 +110,14 @@ for look in looking:
         requests = requests + 1
 
     #print(resultsCsv)
-    #intento abrir un txt, si no existe lo creo
+    #try to open a txt, if doesn't exist, create it
+    folder = "/media/ubuntu/writableSD/home/ubuntu/Scraps/"
     try:
-        file = open("/media/ubuntu/writableSD/home/ubuntu/Scraps/" + 'mercadolibre' + '_' + look + '.csv', 'r')
+        file = open(folder + 'mercadolibre' + '_' + look + '.csv', 'r')
     except IOError:
-        file = open("/media/ubuntu/writableSD/home/ubuntu/Scraps/" + 'mercadolibre' + '_' + look +'.csv', 'x')
-        #file.write("Time," + "Temp1," + "\n")
+        file = open(folder + 'mercadolibre' + '_' + look +'.csv', 'x')
 
-    file = open("/media/ubuntu/writableSD/home/ubuntu/Scraps/" + 'mercadolibre' + '_' + look +'.csv', 'a')
-    #file.write(str(time.asctime()) + "\n")
-    #file.write(str(results) +"\n")
+    file = open(folder + 'mercadolibre' + '_' + look +'.csv', 'a')
     file.close()
 
     export_csv = resultsCsv.to_csv(r"/media/ubuntu/writableSD/home/ubuntu/Scraps/" + 'mercadolibre' + '_' + look + ".csv", mode='a', index = None, header = True)
