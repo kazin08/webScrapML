@@ -6,12 +6,12 @@ from selenium.webdriver.support import expected_conditions
 from bs4 import BeautifulSoup
 import re
 import pandas as pd
-import numpy as np
+#import numpy as np
 from datetime import date, timedelta, datetime
 import time
 import random
-import matplotlib.pyplot as plt
-import seaborn as sns
+#import matplotlib.pyplot as plt
+#import seaborn as sns
 import os
 
 def scrape(item, requests):
@@ -19,8 +19,7 @@ def scrape(item, requests):
     global results
     global resultsCsv  #to save CSV
 
-    url = "https://listado.mercadolibre.com.ar/" + item  #busqueda
-
+    url = "https://listado.mercadolibre.com.ar/" + item  #search
 
     #https://listado.mercadolibre.com.ar/almohada   #example
     print("\n" + url)
@@ -35,7 +34,7 @@ def scrape(item, requests):
     driver.implicitly_wait(20)
     driver.get(url)
 
-    #Check if Kayak thinks that we're a bot
+    #Check if page thinks that we're a bot
     time.sleep(5)
     soup=BeautifulSoup(driver.page_source, 'lxml')
 
@@ -51,19 +50,19 @@ def scrape(item, requests):
 
     soup=BeautifulSoup(driver.page_source, 'lxml')
 
-    #get the title and price times
-    titles = soup.find_all('span', attrs={'class': 'main-title'})
-    prices = soup.find_all('span', attrs={'class': 'price__fraction'})
-    links = soup.find_all('div', attrs={'class': 'images-viewer'})
+    #get the title, link and price times
+    titles = soup.find_all('h2', attrs={'class': 'ui-search-item__title'})              #'span', class:main-title
+    prices = soup.find_all('div', attrs={'class': 'ui-search-price__second-line'})      #span , price__fraction
+    links = soup.find_all('div', attrs={'class': 'ui-search-result__image'})            #images-viewer
 
     #fix length
-    if (len(titles) != len(prices)):
+    """if (len(titles) != len(prices)):
         if (len(titles) > len(prices)):
             titles = titles[:-1]
             links = links[:-1]
         else:
             prices = prices[:-1]
-            links = links[:-1]
+            links = links[:-1]"""
 
     title = []
     for div in titles:
@@ -71,11 +70,11 @@ def scrape(item, requests):
 
     price = []
     for div in prices:
-        price.append(div.getText().replace('.', ''))
+        price.append(div.find('span').getText()[1:].replace('.', ''))     #.replace('.', '')
 
     link = []
     for div in links:
-        link.append(div.get('item-url'))
+        link.append(div.find('a').get('href'))    #item-url
 
 
     df = pd.DataFrame({"time" : datetime.now().strftime("%Y-%m-%d"), "title" : title, "price" : price, "link" : link })
@@ -117,8 +116,8 @@ for look in looking:
     except IOError:
         file = open(folder + 'mercadolibre' + '_' + look +'.csv', 'x')
 
-    file = open(folder + 'mercadolibre' + '_' + look +'.csv', 'a')
-    file.close()
+    #file = open(folder + 'mercadolibre' + '_' + look +'.csv', 'a')
+    #file.close()
 
-    export_csv = resultsCsv.to_csv(r"/media/ubuntu/writableSD/home/ubuntu/Scraps/" + 'mercadolibre' + '_' + look + ".csv", mode='a', index = None, header = True)
+    export_csv = resultsCsv.to_csv(folder + 'mercadolibre' + '_' + look + ".csv", mode='a', index = None, header = True)
 
