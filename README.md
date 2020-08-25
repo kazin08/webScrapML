@@ -1,2 +1,2 @@
 # webScrapML
-Web scrapping for search things in ML and save data in an csv file
+Web scrapping for search things in ML and save data in a csv file
