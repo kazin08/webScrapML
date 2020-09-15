@@ -98,7 +98,7 @@ results = pd.DataFrame(columns=['time','title','price','link'])
 requests = 0
 
 looking = ['almohada-inteligente','Zapatillas-Reef-Mission-Le','balanza-xiaomi']
-#looking = ['galaxy-a71']
+#looking = ['amazfit-stratos-3']
 
 
 for look in looking:
