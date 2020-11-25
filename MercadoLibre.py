@@ -48,46 +48,52 @@ def scrape(item, requests):
 
     time.sleep(20) #wait 20sec for the page to load
 
-    soup=BeautifulSoup(driver.page_source, 'lxml')
+    try:
 
-    #get the title, link and price times
-    titles = soup.find_all('h2', attrs={'class': 'ui-search-item__title'})              #'span', class:main-title
-    prices = soup.find_all('div', attrs={'class': 'ui-search-price__second-line'})      #span , price__fraction
-    links = soup.find_all('div', attrs={'class': 'ui-search-result__image'})            #images-viewer
+        soup=BeautifulSoup(driver.page_source, 'lxml')
 
-    #fix length
-    """if (len(titles) != len(prices)):
-        if (len(titles) > len(prices)):
-            titles = titles[:-1]
-            links = links[:-1]
-        else:
-            prices = prices[:-1]
-            links = links[:-1]"""
+        #get the title, link and price times
+        titles = soup.find_all('h2', attrs={'class': 'ui-search-item__title'})              #'span', class:main-title
+        prices = soup.find_all('div', attrs={'class': 'ui-search-price__second-line'})      #span , price__fraction
+        links = soup.find_all('div', attrs={'class': 'ui-search-result__image'})            #images-viewer
 
-    title = []
-    for div in titles:
-        title.append(div.getText()[:-1])
+        #fix length
+        """if (len(titles) != len(prices)):
+            if (len(titles) > len(prices)):
+                titles = titles[:-1]
+                links = links[:-1]
+            else:
+                prices = prices[:-1]
+                links = links[:-1]"""
 
-    price = []
-    for div in prices:
-        price.append(div.find('span').getText()[1:].replace('.', ''))     #.replace('.', '')
+        title = []
+        for div in titles:
+            title.append(div.getText()[:-1])
 
-    link = []
-    for div in links:
-        link.append(div.find('a').get('href'))    #item-url
+        price = []
+        for div in prices:
+            price.append(div.find('span').getText()[1:].replace('.', ''))     #.replace('.', '')
+
+        link = []
+        for div in links:
+            link.append(div.find('a').get('href'))    #item-url
 
 
-    df = pd.DataFrame({"time" : datetime.now().strftime("%Y-%m-%d"), "title" : title, "price" : price, "link" : link })
+        df = pd.DataFrame({"time" : datetime.now().strftime("%Y-%m-%d"), "title" : title, "price" : price, "link" : link })
 
 
-    results = pd.concat([results, df], sort=False)
-    resultsCsv = pd.concat([df], sort=False)
+        results = pd.concat([results, df], sort=False)
+        resultsCsv = pd.concat([df], sort=False)
 
-    driver.close() #close the browser
+        driver.close() #close the browser
 
-    time.sleep(10) #wait 15sec until the next request
+        time.sleep(10) #wait 15sec until the next request
 
-    return "success"
+        return "success"
+        
+    except:
+        driver.close() #close the browser
+        return "failure"
 
 
 
@@ -97,8 +103,8 @@ results = pd.DataFrame(columns=['time','title','price','link'])
 
 requests = 0
 
-looking = ['almohada-inteligente','Zapatillas-Reef-Mission-Le','balanza-xiaomi']
-#looking = ['amazfit-stratos-3']
+#looking = ['almohada-inteligente','Zapatillas-Reef-Mission-Le','balanza-xiaomi']
+looking = ['samsonite-varro-mediana']
 
 
 for look in looking:
@@ -110,7 +116,7 @@ for look in looking:
 
     #print(resultsCsv)
     #try to open a txt, if doesn't exist, create it
-    folder = "/media/ubuntu/writableSD/home/ubuntu/Scraps/"
+    folder = "/media/ubuntu/writableSD1/home/ubuntu/Scraps/"
     try:
         file = open(folder + 'mercadolibre' + '_' + look + '.csv', 'r')
     except IOError:
