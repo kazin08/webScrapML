@@ -90,7 +90,7 @@ def scrape(item, requests):
         time.sleep(10) #wait 15sec until the next request
 
         return "success"
-        
+
     except:
         driver.close() #close the browser
         return "failure"
@@ -108,22 +108,20 @@ looking = ['samsonite-varro-mediana']
 
 
 for look in looking:
-    #resultsCsv = []
     resultsCsv = []
     requests = requests + 1
     while scrape(look, requests) != "success":
         requests = requests + 1
+        # escape from the loop
+        if requests > (len(looking) + 3):
+            break
 
-    #print(resultsCsv)
     #try to open a txt, if doesn't exist, create it
     folder = "/media/ubuntu/writableSD1/home/ubuntu/Scraps/"
     try:
         file = open(folder + 'mercadolibre' + '_' + look + '.csv', 'r')
     except IOError:
         file = open(folder + 'mercadolibre' + '_' + look +'.csv', 'x')
-
-    #file = open(folder + 'mercadolibre' + '_' + look +'.csv', 'a')
-    #file.close()
 
     export_csv = resultsCsv.to_csv(folder + 'mercadolibre' + '_' + look + ".csv", mode='a', index = None, header = True)
 
